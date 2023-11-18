@@ -10,7 +10,8 @@ import (
 func main() {
 	fmt.Println("server started")
 	// getReq()
-	postReq()
+	// postReq()
+	getJson()
 }
 
 func getReq() {
@@ -52,4 +53,15 @@ func postReq() {
 		panic(err)
 	}
 	fmt.Println(string(content))
+}
+
+func getJson() {
+	url := "https://jsonplaceholder.typicode.com/posts"
+	res, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+	bodyBytes, _ := ioutil.ReadAll(res.Body)
+	fmt.Println(string(bodyBytes))
 }

@@ -1,4 +1,4 @@
-module go-server
+module github.com/iamtonmoy0/golang-server
 
 go 1.19
 

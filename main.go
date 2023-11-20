@@ -34,6 +34,7 @@ func main() {
 	r.HandleFunc("/courses", getAllCourses).Methods("POST")
 	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
 	r.HandleFunc("/course-create", createCourse).Methods("POST")
+	r.HandleFunc("/course/update/{id}", updateOneCourse).Methods("PATCH")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
@@ -77,6 +78,7 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 // create course
 func createCourse(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("create new course")
+	w.Header().Set("Content-Type", "application/json")
 	if r.Body == nil {
 		json.NewEncoder(w).Encode("Body is empty")
 	}
@@ -87,6 +89,30 @@ func createCourse(w http.ResponseWriter, r *http.Request) {
 	}
 	rand.Seed(time.Now().UnixNano())
 	course.ID = rand.Intn(100)
-	courses=append(courses, course)
+	courses = append(courses, course)
 	json.NewEncoder(w).Encode(course)
+}
+
+// update one course
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// getting the is
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		panic(err)
+	}
+	// looping through courses
+	for index, course := range courses {
+		if course.ID == id {
+			courses = append(courses[:index], courses[index+1:]...)
+			var course Course
+			_ = json.NewDecoder(r.Body).Decode(&course)
+			course.ID = id
+			courses = append(courses, course)
+			json.NewEncoder(w).Encode("course updated")
+		}
+	}
+	json.NewEncoder(w).Encode("failed to update course")
 }

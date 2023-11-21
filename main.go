@@ -31,6 +31,18 @@ func main() {
 	fmt.Println("server started")
 	// routers
 	r := mux.NewRouter()
+	courses = append(courses, Course{
+		ID:     1,
+		Name:   "Go Programming",
+		Price:  250,
+		Author: &Author{"John Doe", "https://johndoe.com"},
+	})
+	courses = append(courses, Course{
+		ID:     2,
+		Name:   "Python Programming",
+		Price:  300,
+		Author: &Author{"Jane Smith", "https://janesmith.com"},
+	})
 	r.HandleFunc("/", home).Methods("GET")
 	r.HandleFunc("/courses", getAllCourses).Methods("POST")
 	r.HandleFunc("/course-create", createCourse).Methods("POST")

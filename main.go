@@ -29,12 +29,14 @@ var courses []Course
 
 func main() {
 	fmt.Println("server started")
+	// routers
 	r := mux.NewRouter()
 	r.HandleFunc("/", home).Methods("GET")
 	r.HandleFunc("/courses", getAllCourses).Methods("POST")
-	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
 	r.HandleFunc("/course-create", createCourse).Methods("POST")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
 	r.HandleFunc("/course/update/{id}", updateOneCourse).Methods("PATCH")
+	r.HandleFunc("/course/delete/{id}", deleteOneCourse).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
@@ -115,4 +117,19 @@ func updateOneCourse(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	json.NewEncoder(w).Encode("failed to update course")
+}
+
+// delete courses
+func deleteOneCourse(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"])
+	for index, course := range courses {
+		if course.ID == id {
+			courses = append(courses[:index], courses[:index+1]...)
+			json.NewEncoder(w).Encode("Course Deleted")
+		}
+	}
+	json.NewEncoder(w).Encode("Failed to Delete Course")
+
 }
